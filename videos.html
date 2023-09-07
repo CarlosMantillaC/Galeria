@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="favicon.ico.png" type="image/x-icon">
+
+    <title>Tú & Yo Forever</title>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <link rel="stylesheet" type="text/css" href="galeria.css">
+
+</head>
+
+<body>
+
+    <div class="centrar-imagen">
+        <a href="https://drive.google.com/drive/folders/1wJRObkjaYhyp6YlDBJq4Xsq3TM90xoc1?usp=drive_link"
+            target="_blank" style="color: inherit; text-decoration: none;">
+            <img class="imagen" src="corazon.png.png" alt="Descripción de la imagen"></a>
+
+    </div>
+
+    <div class="corazones-container">
+
+        <!-- Aquí se mostrarán los corazones en movimiento -->
+    </div>
+
+
+    <header>
+        <h1>Tú & Yo Forever</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Fotos</a></li>
+                <li><a class="active" href="videos.html">Videos</a></li>
+                <li><a href="historia.html">Historia</a></li>
+
+            </ul>
+        </nav>
+    </header>
+
+    <div id="videos-container">
+
+    </div>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.location.pathname.endsWith('/videos.html')) {
+                gapi.load('client', () => {
+                    gapi.client.init({
+                        apiKey: 'AIzaSyA5bEMG2h2RCdThDezORf1H7rFJskxLX-A', // Reemplaza con tu propia API Key
+                        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
+                    }).then(() => {
+                        obtenerVideosDesdeDrive();
+                    });
+                });
+            }
+        });
+
+        async function obtenerVideosDesdeDrive() {
+            try {
+                const response = await gapi.client.drive.files.list({
+                    q: "'1wJRObkjaYhyp6YlDBJq4Xsq3TM90xoc1' in parents", // Reemplaza 'CARPETA_ID' con la ID de la carpeta de Google Drive que contiene tus videos
+                    fields: "files(id, name, webContentLink, mimeType)",
+                });
+
+                const videosContainer = document.getElementById('videos-container');
+                const videos = response.result.files;
+
+                
+
+                videos.forEach((video) => {
+                    if (video.mimeType.startsWith('video/')) {
+                        const videoElement = document.createElement('iframe');
+                        videoElement.src = `https://drive.google.com/file/d/${video.id}/preview`;
+                        videoElement.controls = true;
+                        videoElement.width = '480';
+                        videoElement.height = '320';
+                        videoElement.title = video.name;
+                        videoElement.setAttribute('allowfullscreen', ''); // Añade esta línea para permitir pantalla completa
+
+
+
+                        const videoContainer = document.createElement('div');
+                        videoContainer.classList.add('video-container');
+                        videoContainer.appendChild(videoElement);
+
+                        const fecha = obtenerFechaDelNombreArchivo(video.name);
+                        const fechaElement = document.createElement('p');
+                        fechaElement.textContent = `Fecha: ${fecha}`;
+                        videoContainer.appendChild(fechaElement);
+
+                        videosContainer.appendChild(videoContainer);
+                    }
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function obtenerFechaDelNombreArchivo(nombreArchivo) {
+            const partesNombre = nombreArchivo.split('-');
+            if (partesNombre.length >= 4) {
+                const fecha = `${partesNombre[1]}-${partesNombre[2]}-${partesNombre[3].split('.')[0]}`;
+                return fecha;
+            } else {
+                return 'Fecha no disponible';
+            }
+        }
+        // ... Tu código JavaScript existente aquí ...
+
+        // Función para crear corazones aleatorios
+        function crearCorazonesAleatorios() {
+            const corazonesContainer = document.querySelector('.corazones-container');
+            const numCorazones = 15; // Cambia este valor para controlar la cantidad de corazones
+
+            for (let i = 0; i < numCorazones; i++) {
+                const corazon = document.createElement('div');
+                corazon.classList.add('corazon');
+                corazonesContainer.appendChild(corazon);
+
+                const startX = Math.random() * window.innerWidth;
+                const startY = Math.random() * window.innerHeight;
+
+                corazon.style.left = `${startX}px`;
+                corazon.style.top = `${startY}px`;
+            }
+        }
+
+        // Llama a la función para crear corazones aleatorios
+        crearCorazonesAleatorios();
+    </script>
+</body>
+
+</html>
