@@ -61,7 +61,7 @@
         async function obtenerVideosDesdeDrive() {
             try {
                 const response = await gapi.client.drive.files.list({
-                    q: "'1wJRObkjaYhyp6YlDBJq4Xsq3TM90xoc1' in parents", // Reemplaza 'CARPETA_ID' con la ID de la carpeta de Google Drive que contiene tus videos
+                    q: "'1_QHx9YE3H7NT6mNmOyvY_jMvhS1AMV-8' in parents", // Reemplaza 'CARPETA_ID' con la ID de la carpeta de Google Drive que contiene tus videos
                     fields: "files(id, name, webContentLink, mimeType)",
                 });
 
