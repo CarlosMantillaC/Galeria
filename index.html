@@ -5,71 +5,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="favicon.ico.png" type="image/x-icon">
+
     <title>Tú & Yo Forever</title>
     <script src="https://apis.google.com/js/api.js"></script>
-    <style>
-        /* Estilos CSS para la galería */
-        .imagen-contenedor {
-            margin: 10px;
-            display: inline-block;
-            text-align: center;
-        }
+    <link rel="stylesheet" type="text/css" href="galeria.css">
 
-        .imagen-contenedor img {
-            width: 250px;
-            height: 250px;
-            object-fit: cover;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .imagen-contenedor img:hover {
-            transform: scale(1.05);
-        }
-
-        /* Estilos del modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            padding-top: 100px;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.9);
-        }
-
-        .modal-content {
-            margin: auto;
-            display: block;
-            width: 80%;
-            max-width: 700px;
-        }
-
-        .close {
-            position: absolute;
-            top: 15px;
-            right: 35px;
-            color: #f1f1f1;
-            font-size: 40px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: #bbb;
-            text-decoration: none;
-            cursor: pointer;
-        }
-    </style>
 </head>
 
 <body>
-    <!-- Contenido HTML existente... -->
+
+    <div class="centrar-imagen">
+        <a href="https://drive.google.com/drive/folders/1wJRObkjaYhyp6YlDBJq4Xsq3TM90xoc1?usp=drive_link"
+            target="_blank" style="color: inherit; text-decoration: none;">
+            <img class="imagen" src="corazon.png.png" alt="Descripción de la imagen"></a>
+
+    </div>
+
+    <div class="corazones-container">
+        <!-- Aquí se mostrarán los corazones en movimiento -->
+    </div>
+
+
+    <header>
+        <h1>Tú & Yo Forever</h1>
+        <nav>
+            <ul>
+                <li><a class="active" href="index.html">Fotos</a></li>
+                <li><a href="videos.html">Videos</a></li>
+                <li><a href="historia.html">Historia</a></li>
+
+            </ul>
+        </nav>
+    </header>
+
+    <div id="galeria">
+        <!-- Aquí se mostrarán las imágenes -->
+    </div>
+
+
+
+    <div id="myModal" class="modal">
+        <span class="close" id="closeModal">&times;</span>
+        <img class="modal-content" id="imgModal">
+    </div>
+
 
     <script>
         // Configurar la API de Google Drive
@@ -78,85 +57,105 @@
                 apiKey: 'AIzaSyA5bEMG2h2RCdThDezORf1H7rFJskxLX-A',
                 discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
             }).then(() => {
+                // Llamar a la función para obtener imágenes desde Google Drive
                 obtenerImagenesDesdeDrive();
             });
         });
 
-        // Función corregida para obtener imágenes
+        // Función para obtener imágenes desde Google Drive
         async function obtenerImagenesDesdeDrive() {
             try {
                 const response = await gapi.client.drive.files.list({
-                    q: "'1_QHx9YE3H7NT6mNmOyvY_jMvhS1AMV-8' in parents",
-                    fields: "files(id, name)",
-                    pageSize: 100
+                    q: "'1_QHx9YE3H7NT6mNmOyvY_jMvhS1AMV-8' in parents", // Reemplaza 'CARPETA_ID' con la ID de la carpeta de Google Drive
+                    fields: "files(id, name, webContentLink)",
                 });
 
                 const galeria = document.getElementById('galeria');
                 const archivos = response.result.files;
 
-                archivos.forEach(archivo => {
+                archivos.forEach(async (archivo, index) => {
                     const extension = archivo.name.split('.').pop().toLowerCase();
-                    const esImagen = ['jpg', 'jpeg', 'png', 'gif'].includes(extension);
+                    const extensionesPermitidas = ['jpg', 'jpeg', 'png', 'gif']; // Lista de extensiones permitidas
 
-                    if (esImagen) {
+                    if (extensionesPermitidas.includes(extension)) {
+                        // Crea un contenedor <div> para cada par de imagen y fecha
                         const divItem = document.createElement('div');
-                        divItem.className = 'imagen-contenedor';
+                        divItem.classList.add('imagen-contenedor'); // Agrega la clase CSS automáticamente
 
-                        const img = document.createElement('img');
-                        // URL corregida usando el endpoint público
-                        img.src = `https://drive.google.com/uc?id=${archivo.id}`;
-                        img.alt = archivo.name;
+                        const imagen = document.createElement('img');
+                        imagen.src = archivo.webContentLink;
+                        imagen.alt = archivo.name;
 
-                        const fecha = document.createElement('p');
-                        fecha.textContent = extraerFecha(archivo.name);
+                        // Extrae la fecha del nombre del archivo
+                        const fechaExtraida = obtenerFechaDelNombreArchivo(archivo.name);
 
-                        img.addEventListener('click', () => mostrarImagen(img.src));
-                        
-                        divItem.appendChild(img);
-                        divItem.appendChild(fecha);
+                        // Crea un elemento <p> para mostrar la fecha
+                        const fechaElement = document.createElement('p');
+                        fechaElement.textContent = `Fecha: ${fechaExtraida}`;
+
+                        // Agrega el evento de clic para ver la imagen en pantalla completa
+                        imagen.addEventListener('click', () => {
+                            abrirImagenEnModal(imagen.src);
+                        });
+
+                        // Agrega el <div> al contenedor de la galería
+                        divItem.appendChild(imagen);
+                        divItem.appendChild(fechaElement);
+
+                        // Agrega el <div> al contenedor de la galería
                         galeria.appendChild(divItem);
                     }
                 });
             } catch (error) {
-                console.error('Error al cargar imágenes:', error);
-                galeria.innerHTML = '<p>Error al cargar las imágenes. Verifica la conexión o los permisos.</p>';
+                console.error(error);
             }
         }
 
-        // Función para extraer fecha del nombre de archivo
-        function extraerFecha(nombre) {
-            const regex = /(\d{4})-(\d{2})-(\d{2})/;
-            const coincidencia = nombre.match(regex);
-            return coincidencia ? `${coincidencia[3]}/${coincidencia[2]}/${coincidencia[1]}` : 'Fecha desconocida';
-        }
-
-        // Funcionalidad del modal
-        function mostrarImagen(src) {
+        // Función para abrir la imagen en pantalla completa
+        function abrirImagenEnModal(imagenSrc) {
             const modal = document.getElementById('myModal');
             const modalImg = document.getElementById('imgModal');
             modal.style.display = 'block';
-            modalImg.src = src;
+            modalImg.src = imagenSrc;
 
-            // Cerrar al hacer clic fuera de la imagen
-            window.onclick = function(event) {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                }
+            // Agrega un evento de clic al área de fondo oscuro para cerrar la imagen
+            modal.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+        }
+
+
+        // Función para extraer la fecha del nombre del archivo
+        function obtenerFechaDelNombreArchivo(nombreArchivo) {
+            // Supongamos que el nombre del archivo sigue el formato "imagen-AAAA-MM-DD.jpg"
+            const partesNombre = nombreArchivo.split('-');
+            if (partesNombre.length === 4) {
+                const fecha = `${partesNombre[1]}-${partesNombre[2]}-${partesNombre[3].split('.')[0]}`;
+                return fecha;
+            } else {
+                return 'Fecha no disponible';
             }
         }
 
-        // Corazones flotantes (opcional)
-        function crearCorazones() {
-            const container = document.querySelector('.corazones-container');
-            for (let i = 0; i < 15; i++) {
+        // ... Tu código JavaScript existente aquí ...
+
+        // Función para crear corazones aleatorios
+        function crearCorazonesAleatorios() {
+            const corazonesContainer = document.querySelector('.corazones-container');
+            const numCorazones = 15; // Cambia este valor para controlar la cantidad de corazones
+
+            for (let i = 0; i < numCorazones; i++) {
                 const corazon = document.createElement('div');
-                corazon.className = 'corazon';
-                corazon.style.left = `${Math.random() * 100}vw`;
-                corazon.style.animationDelay = `${Math.random() * 2}s`;
-                container.appendChild(corazon);
+                corazon.classList.add('corazon');
+                corazonesContainer.appendChild(corazon);
+
+                const startX = Math.random() * window.innerWidth;
+                const startY = Math.random() * window.innerHeight;
+
+                corazon.style.left = `${startX}px`;
+                corazon.style.top = `${startY}px`;
             }
         }
-        window.onload = crearCorazones;
-    </script>
-</body>
-</html>
+
+        // Llama a la función para crear corazones aleatorios
+        crearCorazonesAleatorios();
