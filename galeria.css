@@ -3,7 +3,7 @@ body {
     margin-left: 50px; /* Margen en el lado izquierdo de la página */
     margin-right: 50px; /* Margen en el lado derecho de la página */
     margin-bottom: 50px;
-    background-image: linear-gradient(to right, rgb(219, 58, 58), purple);
+    background-colo: green;
 }
 
 
@@ -140,74 +140,6 @@ h1 {
     text-align: center;
     text-shadow:4px 4px 4px rgba(0, 0, 0, 0.5) ;
 }
-
-
-@keyframes colorChange {
-    0% {
-        color: rgb(189, 130, 236); /* Color inicial */
-        text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5); /* Sombra roja */
-    }
-    100% {
-        color: rgb(0, 0, 0); /* Color intermedio */
-        text-shadow:4px 4px 4px rgb(189, 130, 236); /* Sombra azul */
-    }
-}
-
-.tiempo {
-    text-align: center;
-    font-size: 40px; /* Tamaño de fuente de la fecha */
-    animation: colorChange 5s infinite; /* Aplicar la animación */
-    font-family: lucida;
-}
-
-
-
-.corazones-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    pointer-events: none; /* Evita que los corazones intercepten clics */
-}
-
-.corazon {
-    position: absolute;
-    width: 40px; /* Ancho del corazón */
-    height: 40px; /* Alto del corazón */
-    background-image: url('corazon.png.png'); /* Ruta a la imagen de corazón */
-    background-size: cover;
-    animation: moveHearts 60s linear infinite, moveRandomly 20s linear infinite; /* Animación para mover y mover aleatoriamente */
-}
-
-@keyframes moveHearts {
-    0% {
-        transform: translateY(0);
-    }
-    100% {
-        transform: translateY(-100vh);
-    }
-}
-
-@keyframes moveRandomly {
-    0% {
-        transform: translate(0, 0);
-    }
-    25% {
-        transform: translate(100px, 100px);
-    }
-    50% {
-        transform: translate(-100px, 100px);
-    }
-    75% {
-        transform: translate(-100px, -100px);
-    }
-    100% {
-        transform: translate(100px, -100px);
-    }
-}
-
 
   /* Estilos para centrar la imagen */
 .centrar-imagen {
