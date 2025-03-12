@@ -66,10 +66,9 @@
         async function obtenerImagenesDesdeDrive() {
             try {
                 const response = await gapi.client.drive.files.list({
-                    q: "'1wJRObkjaYhyp6YlDBJq4Xsq3TM90xoc1' in parents", // Reemplaza 'CARPETA_ID' con la ID de la carpeta de Google Drive
+                    q: "'1_QHx9YE3H7NT6mNmOyvY_jMvhS1AMV-8' in parents", // Reemplaza 'CARPETA_ID' con la ID de la carpeta de Google Drive
                     fields: "files(id, name, webContentLink)",
                 });
-
 
                 const galeria = document.getElementById('galeria');
                 const archivos = response.result.files;
